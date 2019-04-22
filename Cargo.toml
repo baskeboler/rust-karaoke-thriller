@@ -1,0 +1,26 @@
+[package]
+name = "getting_started"
+version = "0.1.0"
+authors = ["Victor Gil <baskeboler@gmail.com>"]
+edition = "2018"
+exclude=["openssl"]
+[dependencies]
+piston={version="0.42.0"}
+piston2d-graphics = "0.30.0"
+pistoncore-glutin_window = "0.54.0"
+piston2d-opengl_graphics = "0.59.0"
+freetype="*"
+find_folder="*"
+colors={version="*", path="../colors"}
+serde="*"
+serde_derive="*"
+serde_json="*"
+chrono="*"
+# [dependencies.openssl]
+# version="0.9.24"
+# features = ["vendored"]
+
+# [dependencies.dyon]
+# version="*"
+# features=[]
+# exclude=["openssl"]
