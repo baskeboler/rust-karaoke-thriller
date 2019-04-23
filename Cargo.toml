@@ -6,6 +6,7 @@ edition = "2018"
 exclude=["openssl"]
 [dependencies]
 piston={version="0.42.0"}
+# piston_window="*"
 piston2d-graphics = "0.30.0"
 pistoncore-glutin_window = "0.54.0"
 piston2d-opengl_graphics = "0.59.0"
@@ -16,6 +17,10 @@ serde="*"
 serde_derive="*"
 serde_json="*"
 chrono="*"
+rodio="*"
+piston-ai_behavior="*"
+piston2d-sprite="*"
+
 # [dependencies.openssl]
 # version="0.9.24"
 # features = ["vendored"]
