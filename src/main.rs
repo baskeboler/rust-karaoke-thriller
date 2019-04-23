@@ -21,7 +21,7 @@ mod lyrics;
 // use graphics::*;
 // use opengl_graphics::graphics::character::CharacterCache;
 // use opengl_graphics::{GlGraphics, OpenGL, GlyphCache};
-
+use std::rc::Rc;
 // use graphics::glyph_cache::rusttype::GlyphCache;
 use ai_behavior::*;
 use chrono::{DateTime, Duration, Local};
@@ -122,6 +122,7 @@ impl App<GlGraphics> {
                 .trans(x, y)
                 .rot_rad(rotation)
                 .trans(-0.5 * SQUARE_EDGE_SIZE, -0.5 * SQUARE_EDGE_SIZE);
+            scene.draw(c.transform.trans(x, y), gl);
             rectangle(secondary_color, square, transform, gl);
             // character::CharacterCache
             text(
@@ -142,7 +143,6 @@ impl App<GlGraphics> {
                 gl,
             )
             .unwrap();
-            scene.draw(c.transform.trans(x, y), gl);
         });
         // {
         //     self.gl.draw(args.viewport(), |c, gl| {
@@ -285,14 +285,13 @@ fn get_animation() -> Behavior<Animation> {
     )
 }
 fn main() {
-    println!("Hello, world!");
     let opengl = OpenGL::V4_5;
     let lyrics: Vec<LyricsFrame> = std::fs::read_to_string("song.json")
         .map(|s| serde_json::de::from_str(s.as_str()).unwrap())
         .unwrap();
     println!("lyrics loaded");
 
-    let mut window: Window = WindowSettings::new("spinning square", [400, 400])
+    let mut window: Window = WindowSettings::new("thriller karaoke", [800, 600])
         .opengl(opengl)
         .exit_on_esc(true)
         .vsync(true)
@@ -302,14 +301,20 @@ fn main() {
         .for_folder("assets")
         .unwrap();
 
-    let mut scene = sprite::Scene::new();
+    let mut scene = Scene::new();
     let tex =
-        std::rc::Rc::new(Texture::from_path("infuy.svg.png", &TextureSettings::new()).unwrap());
-    let mut sprite = sprite::Sprite::from_texture(tex.clone());
+        Rc::new(Texture::from_path("infuy.svg.png", &TextureSettings::new()).unwrap());
+    let mut sprite = Sprite::from_texture(tex);
+
+    let bg_tex = Rc::new(Texture::from_path("bg.jpeg", &TextureSettings::new()).unwrap());
+    let mut bg_sprite = Sprite::from_texture(bg_tex);
+    bg_sprite.set_anchor(0.5, 0.5);
+    bg_sprite.set_position(0.0, 0.0);
     sprite.set_position(0.0, 0.0);
     sprite.set_anchor(0.5, 0.5);
-    let id = scene.add_child(sprite);
-
+    let id = bg_sprite.add_child(sprite);
+    scene.add_child(bg_sprite);
+    
     scene.run(id, &get_animation());
     // This animation and the one above can run in parallel.
     let rotate = Action(Ease(
@@ -326,7 +331,7 @@ fn main() {
         rotation: 0.0,
         frame_count: 0,
         fps: 0.0,
-        color: RgbaColorType::new(0.2, 0.45, 0.3),
+        color: RgbaColorType{r:0.2, g:0.45, b:0.3, a:0.3},
         lyrics: LyricsDisplay::new("hola como te va? uno dos tres cuatro cinco seis siete"),
         frames: lyrics,
         start: chrono::Local::now()
